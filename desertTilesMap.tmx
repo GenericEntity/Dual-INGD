@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="34" height="18" tilewidth="32" tileheight="32" nextobjectid="1">
+ <tileset firstgid="1" name="desert_spritesheet2" tilewidth="32" tileheight="32">
+  <image source="resources/desert_spritesheet2.png" width="160" height="256"/>
+ </tileset>
+ <layer name="Ground" width="34" height="18">
+  <data encoding="base64" compression="zlib">
+   eJzFVNkKwzAMK9ueBjuadmd3s6P//4VzoAZjbCdpMiYQo5kqqU3jqgrjCrwFNC7Cx2MTqaNoh98n8FWox1FZvwA7YX0FXDPWSu4EOAXOjG7oVzNNN3SgeVyjwbGMBXAOXAZ0FGNyEU3AW0Kq3mPLrqW9GdNf2xOrh2cbEhYAf2aty6/QJGRIuh1wH5mT6p2CE/AsrH+AvZAjZeV2wPlgkc8OindGNgXOB4t8diCs9xOD3G+1xJmjzxD67qx7tf9TfUqfYe/lFM878JHpHdMXOyCpns4Uy4efTQ9t/w8RHXgXaQ/+xS9i5g4i
+  </data>
+ </layer>
+ <layer name="Collision" width="34" height="18" opacity="0.37">
+  <data encoding="base64" compression="zlib">
+   eJzNlUEOACEIA+X/n/bkDaFIaSTxtNqOWN21OGUknW5NcdhleL7ed3TOza/CiHAwfVFtxvyzxtOIzqfC8trvycp8FCyoxySLqudRFroMUV47d0/J0eX84X/BeOei/lR12Oc+mSVUO9ufIu9ZttF7oBgbT8oAmw==
+  </data>
+ </layer>
+</map>

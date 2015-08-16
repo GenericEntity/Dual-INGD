@@ -1,0 +1,230 @@
+<html>
+<head>
+	<title>Dual - Level 1</title>
+<style>
+	body { background-color: #CCCCCC; }
+</style>
+<script src="bin/phaser.js"></script>
+</head>
+<body>
+<h1>Dual - Level 1</h1>
+<script>
+var game = new Phaser.Game(1088, 576, Phaser.CANVAS, 'Level1', { preload: preload, create: create, update: update, render: render });
+
+function preload()
+{
+	game.load.image('background', 'resources/desert_BG_Scale1088_576.png');
+ 	game.load.tilemap('platform', 'resources/desertTilesMap.json', null, Phaser.Tilemap.TILED_JSON);
+  	game.load.image('tiles','resources/desert_spritesheet2.png');
+
+   	game.load.spritesheet('player1', 'resources/players/playerOneSpritesheet.png',32,32);
+   	game.load.spritesheet('player2', 'resources/players/playerTwoSpritesheet.png',32,32);
+}
+
+var map;
+var layer;
+var collisionLayer;
+
+var bounceTimer = 0;
+var health = 100;
+var hasControl = true;
+var invulnerability = false;
+
+var facingLeft=true;
+var playerOne;
+var playerTwo;
+
+function CreatePlayers()
+{
+	playerOne = game.add.sprite(32, game.world.height-500, 'player1');
+	ConfigurePlayer(playerOne);
+
+	playerTwo = game.add.sprite(game.world.width - 32, game.world.height-500, 'player2');
+	ConfigurePlayer(playerTwo);
+}
+
+function ConfigurePlayer(player)
+{
+	game.physics.arcade.enable(player);
+	player.body.bounce.y = 0.2;
+	player.body.gravity.y =500;
+	player.body.collideWorldBounds = true;
+
+	player.animations.add('left',[33,34,35],10,true);
+	player.animations.add('right',[30,31,32],10,true);
+	player.animations.add('idleLeft',[9,10,11],5,true);
+	player.animations.add('idleRight',[6,7,8],5,true);
+
+	player.animations.add('dieLeft',[12,13,14,15,16,17],5,false);
+	player.animations.add('dieRight',[23,22,21,20,19,18],5,false);
+	player.animations.add('attackLeft',[3,4,5],10,true);
+	player.animations.add('attackRight',[0,1,2],10,true);
+	player.animations.add('recoverLeft',[27,28,29],5,true);
+	player.animations.add('recoverRight',[24,25,26],5,true);
+}
+
+function CreateGameWorld()
+{
+	game.stage.backgroundColor = '#787878';
+	game.add.sprite(0,0,'background');
+
+	map = game.add.tilemap('platform');
+	map.addTilesetImage('desert_spritesheet2', 'tiles');	
+	layer = map.createLayer('Ground');
+	
+	collisionLayer = map.createLayer('Collision');
+	map.setCollision(1,true, 'Collision');
+	collisionLayer.visible = false;
+
+	layer.resizeWorld();
+	collisionLayer.resizeWorld();
+}
+
+function CreateControls()
+{
+	// Player 1
+	cursors = game.input.keyboard.createCursorKeys();
+	this.keySpace = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
+
+	// Player 2
+	this.keyW = this.game.input.keyboard.addKey(Phaser.Keyboard.W);
+	//this.keyS = this.game.input.keyboard.addKey(Phaser.Keyboard.S);
+	this.keyA = this.game.input.keyboard.addKey(Phaser.Keyboard.A);
+	this.keyD = this.game.input.keyboard.addKey(Phaser.Keyboard.D);
+	this.keyNum7 = this.game.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_7);
+}
+
+function create()
+{
+	game.physics.startSystem(Phaser.Physics.ARCADE);
+
+	CreateGameWorld();
+	
+	CreatePlayers();
+	
+	CreateControls();
+}
+
+function HandlePlayerInput()
+{
+	HandlePlayer1Input();
+	HandlePlayer2Input();
+}
+
+function HandlePlayer1Input()
+{
+	if (cursors.left.isDown)
+	{
+		facingLeft = true;
+		WalkLeftPhy(playerOne);
+	}
+	else if(cursors.right.isDown)
+	{
+		facingLeft = false;
+		WalkRightPhy(playerOne);
+	}
+
+	if (cursors.up.isDown && playerOne.body.onFloor())
+	{
+	    JumpPhy(playerOne);
+	}
+
+	if (this.keySpace.isDown)
+	{
+		AttackAnim();
+	}
+	else if (cursors.left.isDown || cursors.right.isDown)
+	{
+		WalkAnim();
+	}
+	else
+	{
+		IdleAnim();
+	}
+}
+
+function HandlePlayer2Input()
+{
+	if (this.keyA.isDown)
+	{
+		facingLeft = true;
+		WalkLeftPhy(playerTwo);
+	}
+	else if(this.keyD.isDown)
+	{
+		facingLeft = false;
+		WalkRightPhy(playerTwo);
+	}
+
+	if (this.keyW.isDown && playerTwo.body.onFloor())
+	{
+	    JumpPhy(playerTwo);
+	}
+
+	if (this.keySpace.isDown)
+	{
+		AttackAnim();
+	}
+	else if (cursors.left.isDown || cursors.right.isDown)
+	{
+		WalkAnim();
+	}
+	else
+	{
+		IdleAnim();
+	}
+}
+
+function update()
+{	
+	playerOne.body.velocity.x = 0;
+	game.physics.arcade.collide(playerOne,collisionLayer);
+
+	HandlePlayerInput();
+}
+
+function JumpPhy(player)
+{
+	player.body.velocity.y = -300;
+}
+
+function WalkLeftPhy(player)
+{
+	player.body.velocity.x = -150;
+}
+
+function WalkRightPhy(player)
+{
+	player.body.velocity.x = 150;
+}
+
+function AttackAnim(){
+	if (facingLeft)
+		playerOne.animations.play('attackLeft');
+	else
+		playerOne.animations.play('attackRight');
+}
+function IdleAnim(){
+	if (facingLeft)
+		playerOne.animations.play('idleLeft');
+	else
+		playerOne.animations.play('idleRight');
+}
+function WalkAnim(){
+	if(facingLeft)
+		playerOne.animations.play('left');
+	else
+		playerOne.animations.play('right');		
+}
+
+function render() 
+{
+	//this.game.debug.body(playerOne);
+
+}
+
+
+
+</script>
+</body>
+</html>
