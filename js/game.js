@@ -992,15 +992,15 @@ Dual.Game.prototype = {
 
 	PickupFlag: function (player, flag)
 	{
-		if(player.carryingFlag != -1)
-		{
-			this.Debug("player " + player.id + " already carrying flag " + flag.id);
-		}
+		// if(player.carryingFlag != -1)
+		// {
+		// 	this.Debug("player " + player.id + " already carrying flag " + flag.id);
+		// }
 
-		if(flag.carriedBy != -1)
-		{
-			this.Debug("flag " + flag.id + " already carried by player " + player.id);
-		}
+		// if(flag.carriedBy != -1)
+		// {
+		// 	this.Debug("flag " + flag.id + " already carried by player " + player.id);
+		// }
 
 		flag.carriedBy = player.id;
 		flag.nextAutoResetAt = -1;
