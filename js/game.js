@@ -86,7 +86,7 @@ this.playerProjPools = [];
 this.projPoolSize = 40;
 
 this.startingHealth = 100;
-this.normalWalkSpeed = 150; //110 or 150
+this.normalWalkSpeed = 150; //150
 
 /* 
 Determines the percentage of the player's walk speed that he should travel at when attacking.
@@ -102,7 +102,7 @@ this.normalJumpPower = 400;
 this.normalJumpCooldown = 400; // In milliseconds
 this.normalAttacksPerSec = 2;
 this.normalWeapDmg = 20; // adjust
-this.normalPlayerRespawnTime = 2000; // In milliseconds
+this.normalPlayerRespawnTime = 2200; // In milliseconds
 
 this.normalProjSpeed = 350; // adjust
 
@@ -480,6 +480,8 @@ Dual.Game.prototype = {
 		this.placeTrap1Keys[1].onDown.add(function(){this.PlaceTrap(this.players[1], 0);}, this);
 		this.placeTrap2Keys.push(this.input.keyboard.addKey(Phaser.Keyboard.NUMPAD_9));
 		this.placeTrap2Keys[1].onDown.add(function(){this.PlaceTrap(this.players[1], 1);}, this);
+		
+		// this.input.keyboard.addKey(Phaser.Keyboard.P).onDown.add(function(){this.ClearDebug();}, this);
 	},
 
 	CreateHealthBars: function ()
@@ -992,19 +994,46 @@ Dual.Game.prototype = {
 
 	PickupFlag: function (player, flag)
 	{
-		// if(player.carryingFlag != -1)
-		// {
-		// 	this.Debug("player " + player.id + " already carrying flag " + flag.id);
-		// }
+		if(flag.carriedBy != -1)
+		{
+			// Snatching flag
+			this.SnatchFlag(player, this.players[flag.carriedBy], flag);
+		}
+		else
+		{
+			// Picking up flag
+			flag.carriedBy = player.id;
+			flag.nextAutoResetAt = -1;
+			player.carryingFlag = flag.id;
+		}
 
-		// if(flag.carriedBy != -1)
+		// for (var i = 0; i < this.nPlayers; i++)
 		// {
-		// 	this.Debug("flag " + flag.id + " already carried by player " + player.id);
+		// 	this.Debug("Player " + this.players[i].id + " is carrying the flag " + this.players[i].carryingFlag);
+		// 	this.Debug("Flag " + this.flags[i].id + " is being carried by player " + this.flags[i].carriedBy);
 		// }
+	},
 
-		flag.carriedBy = player.id;
-		flag.nextAutoResetAt = -1;
-		player.carryingFlag = flag.id;
+	SnatchFlag: function(snatcher, snatchee, flag)
+	{
+		if(snatcher.carryingFlag != -1)
+		{
+			this.Debug("Player " + snatcher.id + " is already carrying flag " + snatcher.carryingFlag + ".");
+		}
+
+		if(flag.carriedBy == -1)
+		{
+			this.Debug("Flag " + flag.id + " is not carried by anyone but is being snatched by player " + snatcher.id);
+		}
+
+		if(snatchee.carryingFlag == -1)
+		{
+			this.Debug("Player " + snatchee.id + " is not carrying a flag but it is being snatched somehow.");
+		}
+
+		flag.carriedBy = snatcher.id;
+		snatcher.carryingFlag = flag.id;
+		snatchee.carryingFlag = -1;
 	},
 
 	DropFlag: function (player)
@@ -1293,13 +1322,21 @@ Dual.Game.prototype = {
 		{
 			this.debugText = this.add.text(this.world.width / 2, this.world.height / 2 - 100,
 		        msg,
-		        {font: '20px monospace', fill: '#fff', align: 'center'}
+		        {font: '20px monospace', fill: '#000', align: 'center'}
 		        );
 			this.debugText.anchor.set(0.5);
 		}
 		else
 		{
 			this.debugText.text += '\n' + msg;
+		}
+	},
+
+	ClearDebug: function()
+	{
+		if(this.debugText != null)
+		{
+			this.debugText.text = "";
 		}
 	}
 };
